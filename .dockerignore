@@ -1,0 +1,12 @@
+__pycache__
+*.___pycache__
+venv/
+.env/
+.git/
+.gitignore
+.ipynb_checkpoints
+*.ipynb
+*.log
+*.sqlite3
+.coverage
+htmlcov/
