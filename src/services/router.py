@@ -6,6 +6,7 @@ from .service_agent import AgentService
 from ..rate_limiting import limiter
 from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi import APIRouter, Depends, Request, HTTPException, status
+from .langgraph_agent import MODEL_NAME
 
 class AgentRequest(BaseModel):
     message: str
@@ -29,6 +30,10 @@ async def chat_stream(
         service.stream_chat(message, checkpoint_id),
         media_type="text/event-stream",
     )
+
+@router.get("/getModelName", status_code=status.HTTP_200_OK)
+async def get_model_name():
+    return {"name": MODEL_NAME}
 
 @router.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():

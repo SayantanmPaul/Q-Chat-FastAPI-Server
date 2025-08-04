@@ -1,6 +1,7 @@
 from typing import TypedDict, Optional, Annotated
 from langgraph.graph import add_messages, StateGraph, END
 from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain.agents import tool
 from langchain_core.messages import AIMessageChunk, HumanMessage, ToolMessage
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
@@ -12,6 +13,8 @@ import json
 
 load_dotenv()
 
+MODEL_NAME= "llama-3.3-70b-versatile"
+
 # Initialize memory saver for checkpointing
 memory = MemorySaver()
 
@@ -19,15 +22,13 @@ class AgentState(TypedDict):
     messages: Annotated[list, add_messages]
 
 # tavely search tool initialization, max_result set to 4
-search_tools= TavilySearchResults(
-    max_result=4
-)
+search_tools= TavilySearchResults()
 
 
 # tools 
 tools= [search_tools]
 
-model= ChatGroq(model= "moonshotai/kimi-k2-instruct")
+model= ChatGroq(model= MODEL_NAME)
 
 llm_with_tools= model.bind_tools(tools= tools)
 

@@ -2,9 +2,14 @@ from starlette.middleware.cors import CORSMiddleware
 from slowapi.middleware import SlowAPIMiddleware
 from .services.router import router as agents_router
 from .rate_limiting import limiter
-
+from dotenv import load_dotenv
 from fastapi import FastAPI
 import uvicorn
+import os
+
+CLIENT_URL= os.getenv("CLIENT_URL")
+
+load_dotenv()
 
 
 app=FastAPI()
@@ -13,10 +18,11 @@ app=FastAPI()
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
 
+
 # add CROS middleware to allow cross-origin requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", CLIENT_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
