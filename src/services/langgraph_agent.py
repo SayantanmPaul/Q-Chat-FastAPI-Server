@@ -2,18 +2,20 @@ from typing import TypedDict, Optional, Annotated
 from langgraph.graph import add_messages, StateGraph, END
 from langchain_google_genai import ChatGoogleGenerativeAI
 # from langchain.agents import tool
-from langchain_core.messages import AIMessageChunk, HumanMessage, ToolMessage
+from langchain_core.messages import AIMessageChunk, HumanMessage, ToolMessage, SystemMessage
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 from langchain_community.tools import GoogleSerperResults
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langgraph.checkpoint.memory import MemorySaver
+from ..sys_prompt import CUSTOM_SYSTEM_PROMPT
 from uuid import uuid4
 import json
 
 load_dotenv()
 
-MODEL_NAME= "llama-3.3-70b-versatile"
+MODEL_NAME= "gemini-2.0-flash-lite"
+
 
 # Initialize memory saver for checkpointing
 memory = MemorySaver()
@@ -28,9 +30,14 @@ search_tools= TavilySearchResults()
 # tools 
 tools= [search_tools]
 
-model= ChatGroq(model= MODEL_NAME)
+model= ChatGoogleGenerativeAI(model= MODEL_NAME)
 
 llm_with_tools= model.bind_tools(tools= tools)
+
+# injecting system prompt to the graph
+async def start_node(state: AgentState):
+    sys_message= SystemMessage(content= CUSTOM_SYSTEM_PROMPT)
+    return {"messages": [sys_message]}
 
 
 # this node is going to get enire state and will use llm_with_tools to invoke and pass the list of messages and update the state with the result
@@ -82,10 +89,12 @@ async def tool_node(state):
 # build the state graph
 graph_builder = StateGraph(AgentState)
 
+graph_builder.add_node("inject_system_prompt", start_node)
 graph_builder.add_node("model", model)
 graph_builder.add_node("tool_node", tool_node)
-graph_builder.set_entry_point("model")
 
+graph_builder.set_entry_point("inject_system_prompt")
+graph_builder.add_edge("inject_system_prompt", "model")
 graph_builder.add_conditional_edges("model", tools_router)
 graph_builder.add_edge("tool_node", "model")
 
@@ -181,4 +190,4 @@ async def generate_chat_responses(message: str, checkpoint_id: Optional[str] = N
                 yield f"data: {json.dumps(payload)}\n\n"
     
     # Send an end event
-    yield f"data: {{\"type\": \"end\"}}\n\n"
+    yield f"data: {{\"type\": \"end\"}}\n\n"    
