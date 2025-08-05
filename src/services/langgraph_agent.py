@@ -14,7 +14,7 @@ import json
 
 load_dotenv()
 
-MODEL_NAME= "gemini-2.0-flash-lite"
+MODEL_NAME= "gemini-2.5-flash-lite"
 
 
 # Initialize memory saver for checkpointing
