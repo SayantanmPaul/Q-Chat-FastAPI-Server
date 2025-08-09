@@ -4,7 +4,7 @@ from typing import Optional
 MODEL_LIST= [
     {
         "name": "gemini-2.5-flash-lite",
-        "description": "model_desc"
+        "description": "Google's most cost-efficient model"
     },
     {
         "name": "openai/gpt-oss-20b",

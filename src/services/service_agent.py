@@ -1,6 +1,6 @@
 from typing import AsyncGenerator, Optional
 from fastapi import HTTPException
-from ..services.langgraph_agent import generate_chat_responses
+from .generate_responses import generate_chat_responses
 
 class AgentService:
     async def stream_chat(
