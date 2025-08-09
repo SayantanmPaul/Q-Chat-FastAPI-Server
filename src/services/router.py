@@ -5,8 +5,9 @@ from typing import Optional
 from .service_agent import AgentService
 from ..rate_limiting import limiter
 from fastapi.responses import StreamingResponse, JSONResponse
-from fastapi import APIRouter, Depends, Request, HTTPException, status
-from .langgraph_agent import MODEL_NAME
+from fastapi import APIRouter, Depends, Request, HTTPException, status, Query
+from .builder.model_selection import MODEL_LIST
+from .builder.model_selection import select_model
 
 class AgentRequest(BaseModel):
     message: str
@@ -18,22 +19,24 @@ router = APIRouter(
 )
 
 # Chat
-@router.get( "/chat-stream", response_class=StreamingResponse, )
+@router.get( "/chat-stream", response_class=StreamingResponse )
 @limiter.limit("10/minute")
 async def chat_stream(
     request: Request,
-    message: str,
-    checkpoint_id: Optional[str] = None,
+    message: str = Query(...),
+    checkpoint_id: Optional[str] = Query(None),
+    model_name: Optional[str] = Query(None),
     service: AgentService = Depends(),
 ):
+    choosen= select_model(model_name)
     return StreamingResponse(
-        service.stream_chat(message, checkpoint_id),
+        service.stream_chat(message, checkpoint_id, choosen),
         media_type="text/event-stream",
     )
 
 @router.get("/getModelName", status_code=status.HTTP_200_OK)
 async def get_model_name():
-    return {"name": MODEL_NAME}
+    return {"data": MODEL_LIST}
 
 @router.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
