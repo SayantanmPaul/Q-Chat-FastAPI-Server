@@ -1,5 +1,6 @@
 from typing import Optional
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 # from langchain.agents import tool
 from langchain_core.messages import AIMessageChunk, HumanMessage
 from langchain_groq import ChatGroq
@@ -7,16 +8,25 @@ from dotenv import load_dotenv
 from .builder.graph_builder import build_graph
 from uuid import uuid4
 import json
+import os
+
 
 load_dotenv()
 
+OPENROUTER_API_KEY= os.getenv("OPENROUTER_API_KEY")
+
 def make_model(model_name: str):
     """Return a ready-to-use LLM instance based on the model name."""
+
     if model_name== "gemini-2.5-flash-lite":
         return ChatGoogleGenerativeAI(model= model_name)    
-    return ChatGroq(model= model_name)
+    return ChatOpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key= OPENROUTER_API_KEY,
+        model_name= model_name
+    )
 
-# serialize llm message chunk
+# serialize llm message chunkz
 def serialise_ai_message_chunk(chunk): 
     if(isinstance(chunk, AIMessageChunk)):
         return chunk.content
@@ -34,6 +44,7 @@ async def generate_chat_responses(
     graph = build_graph(llm)
 
     is_new_conversation = checkpoint_id is None
+    
     # generate checkpoint id
     thread_id= str(uuid4()) if is_new_conversation else checkpoint_id
 

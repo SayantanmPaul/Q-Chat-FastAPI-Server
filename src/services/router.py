@@ -39,6 +39,7 @@ async def get_model_name():
     return {"data": MODEL_LIST}
 
 @router.get("/health", status_code=status.HTTP_200_OK)
+
 async def health_check():
     """ health check endpoint"""
 
