@@ -3,16 +3,24 @@ from typing import Optional
 
 MODEL_LIST= [
     {
-        "name": "gemini-2.5-flash-lite",
-        "description": "Google's most cost-efficient model"
-    },
-    {
-        "name": "openai/gpt-oss-20b",
-        "description": "OpenAI's compact open-weight model"
-    },
-    {
         "name": "openai/gpt-oss-120b",
         "description": "OpenAI's flagship open-weight model"
+    },
+    {
+        "name": "qwen/qwen3-235b-a22b-2507",
+        "description": "Qwen's multilingual language model"
+    },
+    {
+        "name": "meta-llama/llama-4-scout",
+        "description": "Meta's MoE language model"
+    },
+    {
+        "name": "meta-llama/llama-3.3-70b-instruct",
+        "description": "Meta's pretrained language model"
+    },
+    {
+        "name": "gemini-2.5-flash-lite",
+        "description": "Google's most cost-efficient model"
     },
 ]
 

@@ -20,6 +20,7 @@ router = APIRouter(
 
 # Chat
 @router.get( "/chat-stream", response_class=StreamingResponse )
+
 @limiter.limit("10/minute")
 async def chat_stream(
     request: Request,
@@ -39,6 +40,7 @@ async def get_model_name():
     return {"data": MODEL_LIST}
 
 @router.get("/health", status_code=status.HTTP_200_OK)
+
 async def health_check():
     """ health check endpoint"""
 
