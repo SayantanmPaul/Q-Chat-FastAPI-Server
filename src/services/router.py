@@ -20,6 +20,7 @@ router = APIRouter(
 
 # Chat
 @router.get( "/chat-stream", response_class=StreamingResponse )
+
 @limiter.limit("10/minute")
 async def chat_stream(
     request: Request,
