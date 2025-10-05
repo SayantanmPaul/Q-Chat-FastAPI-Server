@@ -1,4 +1,8 @@
 __pycache__
+
+src/___pycache__/
+
+__pycache__
 *.___pycache__
 venv/
 .env/
