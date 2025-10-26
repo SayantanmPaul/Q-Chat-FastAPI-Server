@@ -1,5 +1,4 @@
 from typing import AsyncGenerator, Optional
-from fastapi import HTTPException
 from .generate_responses import generate_chat_responses
 
 class AgentService:

@@ -2,12 +2,12 @@ import os
 import psutil
 from pydantic import BaseModel
 from typing import Optional
-from .service_agent import AgentService
-from ..rate_limiting import limiter
+from ...services.service_agent import AgentService
+from ..limiter import limiter
 from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi import APIRouter, Depends, Request, HTTPException, status, Query
-from .builder.model_selection import MODEL_LIST
-from .builder.model_selection import select_model
+from ...utils.model_selector import MODEL_LIST
+from ...utils.model_selector import select_model
 
 class AgentRequest(BaseModel):
     message: str
@@ -15,13 +15,13 @@ class AgentRequest(BaseModel):
 
 router = APIRouter(
     prefix="/api/v2",
-    tags=["agents"],
+    tags=["Agent"],
 )
 
 # Chat
 @router.get( "/chat-stream", response_class=StreamingResponse )
 
-@limiter.limit("10/minute")
+@limiter.limit("1/second")
 async def chat_stream(
     request: Request,
     message: str = Query(...),
@@ -35,8 +35,9 @@ async def chat_stream(
         media_type="text/event-stream",
     )
 
+@limiter.limit("1/second")
 @router.get("/getModelName", status_code=status.HTTP_200_OK)
-async def get_model_name():
+async def get_model_name(request: Request):
     return {"data": MODEL_LIST}
 
 @router.get("/health", status_code=status.HTTP_200_OK)

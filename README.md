@@ -103,5 +103,5 @@ The server will be available at `http://localhost:8000`.
 
 5.  **Run the application with Uvicorn:**
     ```bash
-    uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    PYTHONDONTWRITEBYTECODE=1 uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
     ```
