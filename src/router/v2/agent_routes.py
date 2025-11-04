@@ -22,7 +22,7 @@ router = APIRouter(
 @router.get( "/chat-stream", response_class=StreamingResponse )
 
 @limiter.limit("1/second")
-async def chat_stream(
+def chat_stream(
     request: Request,
     message: str = Query(...),
     checkpoint_id: Optional[str] = Query(None),
@@ -37,12 +37,12 @@ async def chat_stream(
 
 @limiter.limit("1/second")
 @router.get("/getModelName", status_code=status.HTTP_200_OK)
-async def get_model_name(request: Request):
+def get_model_name(request: Request):
     return {"data": MODEL_LIST}
 
 @router.get("/health", status_code=status.HTTP_200_OK)
 
-async def health_check():
+def health_check():
     """ health check endpoint"""
 
     # Memory usage

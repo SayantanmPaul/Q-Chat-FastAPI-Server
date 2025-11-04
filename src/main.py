@@ -4,6 +4,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 from .router.v2.agent_routes import router as agents_router
 from .router.limiter import limiter
+from .db.core import get_session, init_db
 from dotenv import load_dotenv
 from fastapi import FastAPI
 import uvicorn
@@ -53,6 +54,16 @@ async def root():
         "version": "2.0.0"
     }
 
+@app.on_event("startup")
+async def on_startup():
+    try:
+        init_db()
+        print("\n🚀 Database initialized")
+    except Exception as e:
+        print(f"\n⚠️  Database connection failed: {e}")
+        print("\n⚠️  Application starting without database connection")
+    print("\n🚀 Starting the application...")
+    
 
 # -----------------------------------------------------
 # Routers
